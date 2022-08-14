@@ -1,18 +1,20 @@
 package ru.yandex.praktikum.diplom2;
 
 import com.github.javafaker.Faker;
+import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
 
 public class UserTest {
-
     private UserApiClient client;
     private String email;
     private String password;
     private String name;
+    private String accessToken;
 
     @Before
     public void setUp() {
@@ -24,16 +26,46 @@ public class UserTest {
         name = faker.name().name();
     }
 
+    @After
+    public void endSession() {
+        String correctAccessToken = accessToken.replace("Bearer ", "");
+        client.deleteUser(correctAccessToken);
+    }
+
     @Test
-    public void test1() {
+    @DisplayName("Создание пользователя")
+    public void validCreateRequestShouldReturnUserWithGivenParams() {
         final User user = new User(email, password, name);
 
-//        boolean result = client.createUser(user)
-//                .then()
-//                .statusCode(201)
-//                .extract().body().path("ok");
+        accessToken = client.createUser(user)
+                .then()
+                .statusCode(200)
+                .assertThat().body("user.email", equalTo(email))
+                .assertThat().body("user.name", equalTo(name))
+                .assertThat().body("success", equalTo(true))
+                .extract().body().path("accessToken");
+    }
 
-       // Assert.assertTrue(result);
+    @Test
+    @DisplayName("Попытка создать существующего пользователя")
+    public void validCreateWithExistingUserShouldReturnError() {
+
+        final User user = new User(email, password, name);
+
+        accessToken = client.createUser(user)
+                .then()
+                .statusCode(200)
+                .assertThat().body("success", equalTo(true))
+                .extract().body().path("accessToken");
+
+        String actual = client.createUser(user)
+                .then()
+                .statusCode(403)
+                .assertThat().body("success", equalTo(false))
+                .extract().body().path("message");
+
+        String expected = "User already exists";
+        Assert.assertEquals(actual, expected);
     }
 
 }
