@@ -2,53 +2,53 @@ package ru.yandex.praktikum.diplom2;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(Parameterized.class)
-public class UserParamTest {
-    String email;
-    String password;
-    String name;
+public class LoginParamTest {
 
-    public UserParamTest(String email, String password, String name) {
+    String email;
+    String login;
+    String password;
+
+    public LoginParamTest(String email, String login, String password) {
         this.email = email;
+        this.login = login;
         this.password = password;
-        this.name = name;
     }
 
     @Parameterized.Parameters
-    public static Object[][] tryCreateUser() {
-
+    public static Object[][] tryEnterWithLoginAndPassword() {
         Faker faker = new Faker();
 
         return new Object[][] {
                 {faker.internet().emailAddress(), null, faker.internet().password()},
-                {null, faker.name().name(), faker.internet().password()},
                 {faker.internet().emailAddress(), faker.name().name(), null},
+                {faker.internet().emailAddress(), faker.name().name(), faker.internet().password()},
         };
     }
 
     @Test
-    @DisplayName("Попытка создать пользователя без обязательных полей")
+    @DisplayName("Попытка авторизации с некорректными данными")
     public void createUserWithoutRequiredFieldsShouldReturnError() {
 
-        final User user = new User(email, password, name);
+        final User user = new User(email, login, password);
 
-        UserApiClient client = new UserApiClient();
+        LoginUserApi client = new LoginUserApi();
 
-        String actual = client.createUser(user)
+        String actual = client.loginUser(user)
                 .then()
-                .statusCode(403)
+                .statusCode(401)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 
-        String expected = "Email, password and name are required fields";
+        String expected = "email or password are incorrect";
         Assert.assertEquals(actual, expected);
     }
+
 }
