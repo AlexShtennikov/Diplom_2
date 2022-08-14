@@ -22,6 +22,29 @@ public class UserApiClient {
                 .contentType(ContentType.JSON)
                 .post("/api/auth/register");
     }
+    public Response updateUserData(User user, String accessToken){
+        return RestAssured.with()
+                .filters(requestFilter, responseFilter)
+                .header("Content-type", "application/json")
+                .baseUri(BASE_URL)
+                .auth().oauth2(accessToken)
+                .body(user)
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .patch("/api/auth/user");
+    }
+
+    public Response getUserData(String accessToken){
+        return RestAssured.with()
+                .filters(requestFilter, responseFilter)
+                .header("Content-type", "application/json")
+                .baseUri(BASE_URL)
+                .auth().oauth2(accessToken)
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .get("/api/auth/user");
+    }
+
     public void deleteUser(String accessToken) {
 
         RestAssured.with()

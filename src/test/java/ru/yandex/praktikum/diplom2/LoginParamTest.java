@@ -39,7 +39,7 @@ public class LoginParamTest {
 
         final User user = new User(email, login, password);
 
-        LoginUserApi client = new LoginUserApi();
+        LoginUserClient client = new LoginUserClient();
 
         String actual = client.loginUser(user)
                 .then()

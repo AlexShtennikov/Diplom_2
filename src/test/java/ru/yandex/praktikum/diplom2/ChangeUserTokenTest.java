@@ -9,18 +9,22 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class UserTest {
+public class ChangeUserTokenTest {
+
     private UserApiClient client;
     private String email;
     private String password;
     private String name;
     private String accessToken;
+    private LoginUserClient loginClient;
+    private String refreshToken;
 
     @Before
     public void setUp() {
 
         Faker faker = new Faker();
         client = new UserApiClient();
+        loginClient = new LoginUserClient();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
         name = faker.name().name();
@@ -28,13 +32,14 @@ public class UserTest {
 
     @After
     public void endSession() {
+        loginClient.logout(refreshToken);
         String correctAccessToken = accessToken.replace("Bearer ", "");
         client.deleteUser(correctAccessToken);
     }
 
     @Test
-    @DisplayName("Создание пользователя")
-    public void validCreateRequestShouldReturnUserWithGivenParams() {
+    @DisplayName("Изменение токена")
+    public void validRequestChangeTokenShouldReturnNewAccessToken() {
         final User user = new User(email, password, name);
 
         accessToken = client.createUser(user)
@@ -44,28 +49,21 @@ public class UserTest {
                 .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
-    }
 
-    @Test
-    @DisplayName("Попытка повторного создания уже существующего пользователя")
-    public void validCreateWithExistingUserShouldReturnError() {
-
-        final User user = new User(email, password, name);
-
-        accessToken = client.createUser(user)
+        refreshToken = loginClient.loginUser(user)
                 .then()
                 .statusCode(200)
+                .assertThat().body("user.email", equalTo(email))
+                .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true))
+                .extract().body().path("refreshToken");
+
+        String actual = loginClient.changeAccessToken(refreshToken)
+                .then()
+                .statusCode(200)
                 .extract().body().path("accessToken");
 
-        String actual = client.createUser(user)
-                .then()
-                .statusCode(403)
-                .assertThat().body("success", equalTo(false))
-                .extract().body().path("message");
-
-        String expected = "User already exists";
-        Assert.assertEquals(actual, expected);
+        String expected = accessToken;
+        Assert.assertNotEquals(actual, expected);
     }
-
 }

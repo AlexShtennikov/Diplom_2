@@ -11,18 +11,19 @@ import static org.hamcrest.Matchers.equalTo;
 public class LoginTest {
 
     private UserApiClient userClient;
-    private LoginUserApi loginClient;
+    private LoginUserClient loginClient;
     private String email;
     private String password;
     private String name;
     private String accessToken;
+    private String refreshToken;
 
     @Before
     public void setUp() {
 
         Faker faker = new Faker();
         userClient = new UserApiClient();
-        loginClient = new LoginUserApi();
+        loginClient = new LoginUserClient();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
         name = faker.name().name();
@@ -30,6 +31,9 @@ public class LoginTest {
 
     @After
     public void endSession() {
+
+        loginClient.logout(refreshToken);
+
         String correctAccessToken = accessToken.replace("Bearer ", "");
         userClient.deleteUser(correctAccessToken);
     }
@@ -46,11 +50,12 @@ public class LoginTest {
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
 
-        loginClient.loginUser(user)
+        refreshToken = loginClient.loginUser(user)
                 .then()
                 .statusCode(200)
                 .assertThat().body("user.email", equalTo(email))
                 .assertThat().body("user.name", equalTo(name))
-                .assertThat().body("success", equalTo(true));
+                .assertThat().body("success", equalTo(true))
+                .extract().body().path("refreshToken");
     }
 }

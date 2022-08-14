@@ -3,13 +3,13 @@ package ru.yandex.praktikum.diplom2;
 import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class UserTest {
+public class GetUserDataTest {
+
     private UserApiClient client;
     private String email;
     private String password;
@@ -33,39 +33,23 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("Создание пользователя")
+    @DisplayName("Получение данных существующего пользователя")
     public void validCreateRequestShouldReturnUserWithGivenParams() {
         final User user = new User(email, password, name);
 
         accessToken = client.createUser(user)
                 .then()
                 .statusCode(200)
-                .assertThat().body("user.email", equalTo(email))
-                .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
-    }
 
-    @Test
-    @DisplayName("Попытка повторного создания уже существующего пользователя")
-    public void validCreateWithExistingUserShouldReturnError() {
+        String correctAccessToken = accessToken.replace("Bearer ", "");
 
-        final User user = new User(email, password, name);
-
-        accessToken = client.createUser(user)
+        client.getUserData(correctAccessToken)
                 .then()
                 .statusCode(200)
-                .assertThat().body("success", equalTo(true))
-                .extract().body().path("accessToken");
-
-        String actual = client.createUser(user)
-                .then()
-                .statusCode(403)
-                .assertThat().body("success", equalTo(false))
-                .extract().body().path("message");
-
-        String expected = "User already exists";
-        Assert.assertEquals(actual, expected);
+                .assertThat().body("user.email", equalTo(email))
+                .assertThat().body("user.name", equalTo(name))
+                .assertThat().body("success", equalTo(true));
     }
-
 }
