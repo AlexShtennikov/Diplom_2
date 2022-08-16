@@ -16,7 +16,7 @@ public class ChangeUserTokenTest {
     private String password;
     private String name;
     private String accessToken;
-    private LoginUserClient loginClient;
+    private LoginApiClient loginClient;
     private String refreshToken;
 
     @Before
@@ -24,7 +24,7 @@ public class ChangeUserTokenTest {
 
         Faker faker = new Faker();
         client = new UserApiClient();
-        loginClient = new LoginUserClient();
+        loginClient = new LoginApiClient();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
         name = faker.name().name();

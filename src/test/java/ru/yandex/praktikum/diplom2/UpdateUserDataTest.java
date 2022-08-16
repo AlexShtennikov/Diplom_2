@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class UpdateUserDataTest {
 
     private UserApiClient userClient;
-    private LoginUserClient loginClient;
+    private LoginApiClient loginClient;
     private String email;
     private String password;
     private String name;
@@ -24,7 +24,7 @@ public class UpdateUserDataTest {
 
         faker = new Faker();
         userClient = new UserApiClient();
-        loginClient = new LoginUserClient();
+        loginClient = new LoginApiClient();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
         name = faker.name().name();

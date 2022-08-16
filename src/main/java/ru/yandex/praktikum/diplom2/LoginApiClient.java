@@ -7,7 +7,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
-public class LoginUserClient {
+public class LoginApiClient {
     public static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();

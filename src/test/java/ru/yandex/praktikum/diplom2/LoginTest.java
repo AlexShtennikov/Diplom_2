@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class LoginTest {
 
     private UserApiClient userClient;
-    private LoginUserClient loginClient;
+    private LoginApiClient loginClient;
     private String email;
     private String password;
     private String name;
@@ -23,7 +23,7 @@ public class LoginTest {
 
         Faker faker = new Faker();
         userClient = new UserApiClient();
-        loginClient = new LoginUserClient();
+        loginClient = new LoginApiClient();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
         name = faker.name().name();
@@ -31,9 +31,7 @@ public class LoginTest {
 
     @After
     public void endSession() {
-
         loginClient.logout(refreshToken);
-
         String correctAccessToken = accessToken.replace("Bearer ", "");
         userClient.deleteUser(correctAccessToken);
     }
