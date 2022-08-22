@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UserTest {
@@ -39,7 +41,7 @@ public class UserTest {
 
         accessToken = client.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("user.email", equalTo(email))
                 .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true))
@@ -54,13 +56,13 @@ public class UserTest {
 
         accessToken = client.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
 
         String actual = client.createUser(user)
                 .then()
-                .statusCode(403)
+                .statusCode(HTTP_FORBIDDEN)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 

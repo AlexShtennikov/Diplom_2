@@ -6,9 +6,19 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+import static io.restassured.RestAssured.given;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class LoginApiClient {
-    public static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
+
+    RequestSpecification requestSpec = given()
+            .baseUri("https://stellarburgers.nomoreparties.site");
+
+    private final String API_LOGIN = "/api/auth/login";
+    private final String API_LOGOUT = "/api/auth/logout";
+    private final String API_TOKEN = "/api/auth/token";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();
 
@@ -16,11 +26,11 @@ public class LoginApiClient {
         return RestAssured.with()
                 .filters(requestFilter, responseFilter)
                 .header("Content-type", "application/json")
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .body(user)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .post("/api/auth/login");
+                .post(API_LOGIN);
     }
 
     public void logout(String refreshToken) {
@@ -28,12 +38,12 @@ public class LoginApiClient {
         Token token = new Token(refreshToken);
 
         RestAssured.with()
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .contentType(ContentType.JSON)
                 .body(token)
-                .post("/api/auth/logout")
+                .post(API_LOGOUT)
                 .then()
-                .statusCode(200);
+                .statusCode(HTTP_OK);
     }
 
     public Response changeAccessToken(String refreshToken) {
@@ -41,10 +51,10 @@ public class LoginApiClient {
         Token token = new Token(refreshToken);
 
         return RestAssured.with()
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .contentType(ContentType.JSON)
                 .body(token)
-                .post("/api/auth/token");
+                .post(API_TOKEN);
     }
 
 }

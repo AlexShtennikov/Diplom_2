@@ -10,10 +10,6 @@ public class Data {
     private int carbohydrates;
     private int calories;
     private int price;
-    private String image;
-    private String image_mobile;
-    private String image_large;
-    int __v;
 
     public String get_id() {
         return _id;
@@ -47,22 +43,6 @@ public class Data {
         return price;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public String getImage_mobile() {
-        return image_mobile;
-    }
-
-    public String getImage_large() {
-        return image_large;
-    }
-
-    public int get__v() {
-        return __v;
-    }
-
     public void set_id(String _id) {
         this._id = _id;
     }
@@ -93,21 +73,5 @@ public class Data {
 
     public void setPrice(int price) {
         this.price = price;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public void setImage_mobile(String image_mobile) {
-        this.image_mobile = image_mobile;
-    }
-
-    public void setImage_large(String image_large) {
-        this.image_large = image_large;
-    }
-
-    public void set__v(int __v) {
-        this.__v = __v;
     }
 }

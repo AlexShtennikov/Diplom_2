@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.equalTo;
 
 public class GetUserDataTest {
@@ -39,7 +40,7 @@ public class GetUserDataTest {
 
         accessToken = client.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
 
@@ -47,7 +48,7 @@ public class GetUserDataTest {
 
         client.getUserData(correctAccessToken)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("user.email", equalTo(email))
                 .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true));

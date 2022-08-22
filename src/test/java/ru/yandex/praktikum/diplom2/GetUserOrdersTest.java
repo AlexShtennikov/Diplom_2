@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.Matchers.equalTo;
 
 public class GetUserOrdersTest {
@@ -46,18 +48,18 @@ public class GetUserOrdersTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         String correctAccessToken = accessToken.replace("Bearer ", "");
 
         orderClient.getUserOrders(correctAccessToken)
-                .then().statusCode(200)
+                .then().statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true));
     }
 
@@ -70,19 +72,19 @@ public class GetUserOrdersTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         loginClient.logout(refreshToken);
         String correctAccessToken = "";
 
         String actual = orderClient.getUserOrders(correctAccessToken)
-                .then().statusCode(401)
+                .then().statusCode(HTTP_UNAUTHORIZED)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 

@@ -6,42 +6,49 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+import static io.restassured.RestAssured.given;
 
 public class OrderApiClient {
 
-    public static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
+    RequestSpecification requestSpec = given()
+            .baseUri("https://stellarburgers.nomoreparties.site");
+
+    private final String API_INGREDIENTS = "/api/ingredients";
+    private final String API_ORDERS = "/api/orders";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();
 
     public Response getOrdersLists() {
         return RestAssured.with()
                 .filters(requestFilter, responseFilter)
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .get("/api/ingredients");
+                .get(API_INGREDIENTS);
     }
 
     public Response CreateOrder(Ingredients ordersList, String accessToken) {
         return RestAssured.with()
                 .filters(requestFilter, responseFilter)
                 .header("Content-type", "application/json")
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .auth().oauth2(accessToken)
                 .body(ordersList)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .post("/api/orders");
+                .post(API_ORDERS);
     }
 
     public Response getUserOrders(String accessToken) {
         return RestAssured.with()
                 .filters(requestFilter, responseFilter)
-                .baseUri(BASE_URL)
+                .spec(requestSpec)
                 .auth().oauth2(accessToken)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .get("/api/orders");
+                .get(API_ORDERS);
     }
 
 }

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(Parameterized.class)
@@ -43,7 +44,7 @@ public class LoginParamTest {
 
         String actual = client.loginUser(user)
                 .then()
-                .statusCode(401)
+                .statusCode(HTTP_UNAUTHORIZED)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 

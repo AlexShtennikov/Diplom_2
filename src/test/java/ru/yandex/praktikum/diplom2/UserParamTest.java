@@ -2,12 +2,12 @@ package ru.yandex.praktikum.diplom2;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(Parameterized.class)
@@ -44,7 +44,7 @@ public class UserParamTest {
 
         String actual = client.createUser(user)
                 .then()
-                .statusCode(403)
+                .statusCode(HTTP_FORBIDDEN)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 

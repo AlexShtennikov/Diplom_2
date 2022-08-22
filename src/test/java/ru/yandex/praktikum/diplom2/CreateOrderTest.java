@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.net.HttpURLConnection.*;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CreateOrderTest {
@@ -65,18 +66,18 @@ public class CreateOrderTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         String correctAccessToken = accessToken.replace("Bearer ", "");
 
         orderClient.CreateOrder(ingredients, correctAccessToken)
-                .then().statusCode(200)
+                .then().statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true));
     }
 
@@ -91,18 +92,18 @@ public class CreateOrderTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         String correctAccessToken = accessToken.replace("Bearer ", "");
 
         String actual = orderClient.CreateOrder(ingredients, correctAccessToken)
-                .then().statusCode(400)
+                .then().statusCode(HTTP_BAD_REQUEST)
                 .assertThat().body("success", equalTo(false))
                 .extract().body().path("message");
 
@@ -123,18 +124,18 @@ public class CreateOrderTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         String correctAccessToken = accessToken.replace("Bearer ", "");
 
         orderClient.CreateOrder(ingredients, correctAccessToken)
-                .then().statusCode(500);
+                .then().statusCode(HTTP_INTERNAL_ERROR);
     }
 
     @Test
@@ -161,18 +162,18 @@ public class CreateOrderTest {
 
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("accessToken");
 
         refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().body().path("refreshToken");
 
         loginClient.logout(refreshToken);
 
         orderClient.CreateOrder(ingredients, accessToken)
-                .then().statusCode(403)
+                .then().statusCode(HTTP_FORBIDDEN)
                 .assertThat().body("success", equalTo(false));
     }
 }

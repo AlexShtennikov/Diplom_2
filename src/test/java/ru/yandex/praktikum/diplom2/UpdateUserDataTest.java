@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UpdateUserDataTest {
@@ -45,14 +47,14 @@ public class UpdateUserDataTest {
         //Создаем пользователя
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
 
         //Логинимся под пользователем
         String refreshToken = loginClient.loginUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("user.email", equalTo(email))
                 .assertThat().body("user.name", equalTo(name))
                 .assertThat().body("success", equalTo(true))
@@ -67,7 +69,7 @@ public class UpdateUserDataTest {
         String correctAccessToken = accessToken.replace("Bearer ", "");
         userClient.updateUserData(userUpdate, correctAccessToken)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("user.email", equalTo(newEmail))
                 .assertThat().body("user.name", equalTo(newName))
                 .assertThat().body("success", equalTo(true));
@@ -84,7 +86,7 @@ public class UpdateUserDataTest {
         //Создаем пользователя
         accessToken = userClient.createUser(user)
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .assertThat().body("success", equalTo(true))
                 .extract().body().path("accessToken");
 
@@ -99,7 +101,7 @@ public class UpdateUserDataTest {
         //Пробуем менять данные без авторизации
         String actual = userClient.updateUserData(userUpdate, "")
                 .then()
-                .statusCode(401)
+                .statusCode(HTTP_UNAUTHORIZED)
                 .extract().body().path("message");
 
         String expected = "You should be authorised";
