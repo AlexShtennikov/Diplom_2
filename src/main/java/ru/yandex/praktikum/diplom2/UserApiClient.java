@@ -7,8 +7,12 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
+import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+
 public class UserApiClient {
-    public static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
+    private static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
+    private static String API_REGISTER = "/api/auth/register";
+    private static String API_USER = "/api/auth/user";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();
 
@@ -20,7 +24,7 @@ public class UserApiClient {
                 .body(user)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .post("/api/auth/register");
+                .post(API_REGISTER);
     }
     public Response updateUserData(User user, String accessToken){
         return RestAssured.with()
@@ -31,7 +35,7 @@ public class UserApiClient {
                 .body(user)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .patch("/api/auth/user");
+                .patch(API_USER);
     }
 
     public Response getUserData(String accessToken){
@@ -42,7 +46,7 @@ public class UserApiClient {
                 .auth().oauth2(accessToken)
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .get("/api/auth/user");
+                .get(API_USER);
     }
 
     public void deleteUser(String accessToken) {
@@ -51,8 +55,8 @@ public class UserApiClient {
                 .baseUri(BASE_URL)
                 .auth().oauth2(accessToken)
                 .contentType(ContentType.JSON)
-                .delete("/api/auth/user")
+                .delete(API_USER)
                 .then()
-                .statusCode(202);
+                .statusCode(HTTP_ACCEPTED);
   }
 }

@@ -16,9 +16,9 @@ public class LoginApiClient {
     RequestSpecification requestSpec = given()
             .baseUri("https://stellarburgers.nomoreparties.site");
 
-    private final String API_LOGIN = "/api/auth/login";
-    private final String API_LOGOUT = "/api/auth/logout";
-    private final String API_TOKEN = "/api/auth/token";
+    private static String API_LOGIN = "/api/auth/login";
+    private static String API_LOGOUT = "/api/auth/logout";
+    private static String API_TOKEN = "/api/auth/token";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();
 

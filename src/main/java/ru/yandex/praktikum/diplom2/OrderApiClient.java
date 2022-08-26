@@ -15,8 +15,8 @@ public class OrderApiClient {
     RequestSpecification requestSpec = given()
             .baseUri("https://stellarburgers.nomoreparties.site");
 
-    private final String API_INGREDIENTS = "/api/ingredients";
-    private final String API_ORDERS = "/api/orders";
+    private static String API_INGREDIENTS = "/api/ingredients";
+    private static String API_ORDERS = "/api/orders";
     private final Filter requestFilter = new RequestLoggingFilter();
     private final Filter responseFilter = new ResponseLoggingFilter();
 
